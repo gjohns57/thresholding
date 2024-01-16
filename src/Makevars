@@ -41,10 +41,14 @@ extract_igraph:
 	mv $(IGRAPHDIR)/build/src/libigraph.a $(LIBDIR)
 
 install_lapack:
-	cd $(EXTERNALDIR) && git clone https://github.com/Reference-LAPACK/lapack.git
-	@mkdir $(LAPACKDIR)/build
-	cd $(LAPACKDIR)/build && cmake .. -DCMAKE_INSTALL_LIBDIR=$(LIBDIR) -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-	cd $(LAPACKDIR)/build && cmake --build . -j --target install
+	ld -llapack
+	if [ $? -ne 0 ]
+	then
+		cd $(EXTERNALDIR) && git clone https://github.com/Reference-LAPACK/lapack.git
+		@mkdir $(LAPACKDIR)/build
+		cd $(LAPACKDIR)/build && cmake .. -DCMAKE_INSTALL_LIBDIR=$(LIBDIR) -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+		cd $(LAPACKDIR)/build && cmake --build . -j --target install
+	fi
 
 clean:
 	rm $(SRCDIR)/*.o
